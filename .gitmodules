@@ -1,0 +1,3 @@
+[submodule "submodules/fmr-android-core"]
+	path = submodules/fmr-android-core
+	url = https://github.com/simonldwg/fmr-android-core.git

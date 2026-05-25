@@ -24,4 +24,12 @@ dependencyResolutionManagement {
 
 rootProject.name = "Fitness Music Recommender"
 include(":app")
+
+
+includeBuild("submodules/fmr-android-core") {
+    dependencySubstitution {
+        substitute(module("com.simonludwig:fmr-android-core"))
+            .using(project(":FMRAndroidCore"))
+    }
+}
  

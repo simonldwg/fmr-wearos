@@ -5,11 +5,7 @@ plugins {
 
 android {
     namespace = "com.simonludwig.fitness_music_recommender"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.simonludwig.fitness_music_recommender"
@@ -55,4 +51,5 @@ dependencies {
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.test.manifest)
     debugImplementation(libs.ui.tooling)
+    implementation(libs.fmr.android.core)
 }
