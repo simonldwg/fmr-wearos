@@ -1,8 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
-    <!-- Ignore the IconLocation for the Tile preview images -->
+    <!-- Ignore tile preview image location false positives -->
     <issue id="IconLocation">
         <ignore path="res/drawable/tile_preview.png" />
         <ignore path="res/drawable-round/tile_preview.png" />
     </issue>
+
+    <!-- Enforce: no hardcoded strings in layouts/XML -->
+    <issue id="HardcodedText" severity="error" />
+
+    <!-- Wear OS: flag non-wear-safe APIs -->
+    <issue id="WearableActionDuplicate" severity="warning" />
+
+    <!-- Accessibility: missing content descriptions -->
+    <issue id="ContentDescription" severity="warning" />
+
+    <!-- Security: flag exported components without permissions -->
+    <issue id="ExportedContentProvider" severity="error" />
+    <issue id="ExportedReceiver" severity="error" />
+    <issue id="ExportedService" severity="warning" />
+
+    <!-- Performance: avoid unnecessary object creation -->
+    <issue id="DrawAllocation" severity="error" />
+
+    <!-- Correctness: flag use of deprecated APIs -->
+    <issue id="Deprecated" severity="warning" />
+
+    <!-- Correctness: incorrect usage of resources -->
+    <issue id="ResourceType" severity="error" />
+
+    <!-- Correctness: wrong thread annotations -->
+    <issue id="WrongThread" severity="error" />
 </lint>

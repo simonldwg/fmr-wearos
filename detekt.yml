@@ -1,0 +1,125 @@
+config:
+  validation: true
+  warningsAsErrors: false
+
+complexity:
+  LongMethod:
+    threshold: 60  # Compose UI functions tend to be longer
+  LongParameterList:
+    functionThreshold: 8  # Composables often take many parameters
+    constructorThreshold: 8
+    ignoreDefaultParameters: true
+  TooManyFunctions:
+    thresholdInFiles: 20
+    thresholdInClasses: 15
+    thresholdInInterfaces: 10
+    thresholdInObjects: 15
+    thresholdInEnums: 10
+
+naming:
+  FunctionNaming:
+    # Allow PascalCase for Compose @Composable functions
+    functionPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    excludes: ['**/test/**', '**/androidTest/**']
+  TopLevelPropertyNaming:
+    constantPattern: '[A-Z][_A-Z0-9]*'
+    propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
+
+style:
+  MagicNumber:
+    ignoreNumbers: ['-1', '0', '1', '2']
+    ignoreHashCodeFunction: true
+    ignorePropertyDeclaration: true
+    ignoreConstantDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+    ignoreAnnotation: true
+    ignoreNamedArgument: true
+    ignoreEnums: true
+    ignoreExtensionFunctions: true
+  MaxLineLength:
+    maxLineLength: 140
+    excludeCommentStatements: true
+  WildcardImport:
+    active: true
+    excludeImports:
+      - 'androidx.compose.foundation.layout.*'
+      - 'androidx.compose.material3.*'
+      - 'androidx.compose.ui.tooling.preview.*'
+  UnusedImports:
+    active: true
+  ReturnCount:
+    max: 4
+  ForbiddenComment:
+    active: true
+    values: ['FIXME:', 'STOPSHIP:']
+    allowedPatterns: 'TODO:'
+
+coroutines:
+  GlobalCoroutineUsage:
+    active: true
+  RedundantSuspendModifier:
+    active: true
+  SuspendFunWithFlowReturnType:
+    active: true
+
+potential-bugs:
+  AvoidReferentialEquality:
+    active: true
+  CastToNullableType:
+    active: true
+  DontDowncastCollectionTypes:
+    active: true
+  ElseCaseInsteadOfExhaustiveWhen:
+    active: true
+  ExplicitGarbageCollectionCall:
+    active: true
+  LateinitUsage:
+    active: false  # Hilt injections require lateinit
+  NullCheckOnMutableProperty:
+    active: true
+  UnreachableCatchBlock:
+    active: true
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: true
+    exceptionNames:
+      - ArrayIndexOutOfBoundsException
+      - Error
+      - Exception
+      - IllegalMonitorStateException
+      - NullPointerException
+      - RuntimeException
+      - Throwable
+  TooGenericExceptionThrown:
+    active: true
+
+formatting:
+  active: true
+  android: true
+  autoCorrect: false
+  AnnotationOnSeparateLine:
+    active: false
+  ChainWrapping:
+    active: true
+  FunctionReturnTypeSpacing:
+    active: true
+  ImportOrdering:
+    active: true
+  Indentation:
+    active: true
+    indentSize: 4
+  MaximumLineLength:
+    active: true
+    maxLineLength: 140
+  NoWildcardImports:
+    active: false  # handled by WildcardImport rule above
+  ParameterListWrapping:
+    active: true
+    maxLineLength: 140
+  TrailingCommaOnCallSite:
+    active: true
+    useTrailingCommaOnCallSite: false
+  TrailingCommaOnDeclarationSite:
+    active: true
+    useTrailingCommaOnDeclarationSite: true

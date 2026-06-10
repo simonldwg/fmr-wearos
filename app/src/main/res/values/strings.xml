@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Fitness Music Recommender</string>
-    <string name="hello_world">Hello, %1$s!</string>
+    <string name="waiting_screen">Start your next exercise on your phone…</string>
+    <string name="heart_rate">%1$s bpm</string>
+    <string name="stop_exercise">Stop exercise</string>
+    <string name="notification_channel_name">Show current exercise notification</string>
+    <string name="notification_title">Exercise started</string>
+    <string name="notification_content">Heart rate is being monitored</string>
 </resources>

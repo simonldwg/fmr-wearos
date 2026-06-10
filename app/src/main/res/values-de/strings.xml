@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fitness Music Recommender</string>
+    <string name="waiting_screen">Starte das nächste Training auf dem Handy…</string>
+    <string name="heart_rate">%1$s bpm</string>
+    <string name="stop_exercise">Training beenden</string>
+    <string name="notification_channel_name">Anzeige des aktuellen Trainings</string>
+    <string name="notification_title">Training läuft</string>
+    <string name="notification_content">Herzfrequenz wird überwacht</string>
+</resources>
