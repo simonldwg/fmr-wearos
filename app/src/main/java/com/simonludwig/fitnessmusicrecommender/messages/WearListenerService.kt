@@ -20,15 +20,17 @@ class WearListenerService : BaseListenerService() {
     override fun processMessage(message: WearMessage) {
         when (message) {
             is WearMessage.CurrentSong -> updateCurrentSong(message.title, message.artist)
-            WearMessage.StartExercise -> startExercise()
+            is WearMessage.StartExercise -> startExercise(message.useBasicExerciseScreen)
             WearMessage.StopExercise -> stopExercise()
             WearMessage.ExerciseStopped -> closeApp()
             else -> throw IllegalArgumentException("Message type not supported")
         }
     }
 
-    private fun startExercise() {
-        ExerciseService.start(exerciseState, applicationContext)
+    private fun startExercise(useBasicExerciseScreen: Boolean) {
+        exerciseState.setExerciseActive(true)
+        exerciseState.setUseBasicExerciseScreen(useBasicExerciseScreen)
+        ExerciseService.start(applicationContext)
 
         // Show app / activity if it is not currently active
         val intent = Intent(this, MainActivity::class.java).apply {
@@ -39,7 +41,8 @@ class WearListenerService : BaseListenerService() {
     }
 
     private fun stopExercise() {
-        ExerciseService.stop(exerciseState, applicationContext)
+        exerciseState.setExerciseActive(false)
+        ExerciseService.stop(applicationContext)
     }
 
     private fun updateCurrentSong(title: String, artist: String) {
