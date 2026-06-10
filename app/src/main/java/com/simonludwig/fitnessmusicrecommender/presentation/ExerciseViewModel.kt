@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 class ExerciseViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val exerciseState: ExerciseState,
-    private val songState: SongState,
+    songState: SongState,
     private val messageManager: WearMessageManager
 ) : ViewModel() {
 
@@ -48,6 +48,7 @@ class ExerciseViewModel @Inject constructor(
     }
 
     fun stopExercise() {
-        ExerciseService.stop(exerciseState, context)
+        exerciseState.setExerciseActive(false)
+        ExerciseService.stop(context)
     }
 }

@@ -14,6 +14,9 @@ class ExerciseState @Inject constructor() {
     private val _heartRate = MutableStateFlow<Int?>(null)
     val heartRate = _heartRate.asStateFlow()
 
+    private val _useBasicExerciseScreen = MutableStateFlow(false)
+    val useBasicExerciseScreen = _useBasicExerciseScreen.asStateFlow()
+
 
     fun setExerciseActive(active: Boolean) {
         _isExerciseActive.value = active
@@ -22,11 +25,16 @@ class ExerciseState @Inject constructor() {
             // reset value so the old HR value from the previous exercise does not get used during
             // the next exercise
             _heartRate.value = null
+            _useBasicExerciseScreen.value = false
         }
     }
 
     fun updateHeartRate(bpm: Int) {
         _heartRate.value = bpm
+    }
+
+    fun setUseBasicExerciseScreen(value: Boolean) {
+        _useBasicExerciseScreen.value = value
     }
 
 }

@@ -33,6 +33,8 @@ class MainActivity : ComponentActivity() {
                     val context = LocalContext.current
                     val exerciseActive by exerciseState.isExerciseActive
                         .collectAsStateWithLifecycle()
+                    val useBasicExerciseScreen by exerciseState.useBasicExerciseScreen
+                        .collectAsStateWithLifecycle()
 
                     // Check permissions
                     var hasPermission by remember {
@@ -56,12 +58,19 @@ class MainActivity : ComponentActivity() {
                         val viewModel: ExerciseViewModel = hiltViewModel()
                         val state by viewModel.screenState.collectAsStateWithLifecycle()
 
-                        ExerciseScreen(
-                            state = state,
-                            onPlayPauseToggled = viewModel::togglePlayPause,
-                            onSkipSong = viewModel::skipSong,
-                            onStopExercise = viewModel::stopExercise
-                        )
+                        if(useBasicExerciseScreen) {
+                            BasicExerciseScreen(
+                                onSkipSong = viewModel::skipSong
+                            )
+                        } else {
+                            ExerciseScreen(
+                                state = state,
+                                onPlayPauseToggled = viewModel::togglePlayPause,
+                                onSkipSong = viewModel::skipSong,
+                                onStopExercise = viewModel::stopExercise
+                            )
+                        }
+
                     } else {
                         WaitingScreen()
                     }

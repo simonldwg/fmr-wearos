@@ -116,21 +116,16 @@ class ExerciseService : LifecycleService() {
 
         const val LOG_TAG = "ExerciseService"
 
-        fun start(exerciseState: ExerciseState, context: Context) {
-            // This signals the app that the exercise should be activated
-            exerciseState.setExerciseActive(true)
-
+        fun start(context: Context) {
             Intent(context.applicationContext, ExerciseService::class.java).also {
                 context.startForegroundService(it)
             }
         }
 
-        fun stop(exerciseState: ExerciseState, context: Context) {
+        fun stop(context: Context) {
             Intent(context.applicationContext, ExerciseService::class.java).also {
                 context.stopService(it)
             }
-
-            exerciseState.setExerciseActive(false)
         }
     }
 }
