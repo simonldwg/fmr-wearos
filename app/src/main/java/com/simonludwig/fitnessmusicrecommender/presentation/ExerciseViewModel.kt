@@ -1,15 +1,13 @@
 package com.simonludwig.fitnessmusicrecommender.presentation
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.simonludwig.fitnessmusicrecommender.exercise.ExerciseService
+import com.simonludwig.fitnessmusicrecommender.exercise.ExerciseController
 import com.simonludwig.fitnessmusicrecommender.exercise.ExerciseState
 import com.simonludwig.fitnessmusicrecommender.messages.WearMessage
 import com.simonludwig.fitnessmusicrecommender.messages.WearMessageManager
 import com.simonludwig.fitnessmusicrecommender.songs.SongState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,8 +17,8 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class ExerciseViewModel @Inject constructor(
-    @param:ApplicationContext private val context: Context,
-    private val exerciseState: ExerciseState,
+    private val exerciseController: ExerciseController,
+    exerciseState: ExerciseState,
     songState: SongState,
     private val messageManager: WearMessageManager
 ) : ViewModel() {
@@ -48,7 +46,6 @@ class ExerciseViewModel @Inject constructor(
     }
 
     fun stopExercise() {
-        exerciseState.setExerciseActive(false)
-        ExerciseService.stop(context)
+        exerciseController.stop()
     }
 }
