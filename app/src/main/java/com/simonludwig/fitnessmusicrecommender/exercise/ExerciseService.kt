@@ -26,7 +26,7 @@ import com.simonludwig.fitnessmusicrecommender.presentation.MainActivity
 class ExerciseService : LifecycleService() {
 
     @Inject
-    lateinit var exerciseManager: ExerciseManager
+    lateinit var exerciseClientManager: ExerciseClientManager
 
     @Inject
     lateinit var wearMessageManager: WearMessageManager
@@ -40,8 +40,8 @@ class ExerciseService : LifecycleService() {
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, buildNotification())
         lifecycleScope.launch {
-            exerciseManager.prepareExercise()
-            exerciseManager.startExercise()
+            exerciseClientManager.prepareExercise()
+            exerciseClientManager.startExercise()
             collectHeartRate()
             wearMessageManager.sendPhoneMessage(WearMessage.ExerciseStarted)
         }
@@ -49,7 +49,7 @@ class ExerciseService : LifecycleService() {
 
     private fun collectHeartRate() {
         lifecycleScope.launch {
-            exerciseManager.exerciseUpdateFlow
+            exerciseClientManager.exerciseUpdateFlow
                 .catch { e -> Log.e(LOG_TAG, "Error while receiving exercise updates", e) }
                 .collect { update -> processUpdate(update) }
         }
@@ -74,7 +74,7 @@ class ExerciseService : LifecycleService() {
         Log.d(LOG_TAG, "Stopping exercise service")
 
         lifecycleScope.launch {
-            exerciseManager.stopExercise()
+            exerciseClientManager.stopExercise()
             wearMessageManager.sendPhoneMessage(WearMessage.ExerciseStopped)
         }
     }

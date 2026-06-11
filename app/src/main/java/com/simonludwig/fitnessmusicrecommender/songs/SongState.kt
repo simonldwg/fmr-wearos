@@ -17,4 +17,8 @@ class SongState @Inject constructor() {
         _currentSong.value = Song(title, artist)
     }
 
+    fun clear() {
+        _currentSong.value = null
+    }
+
 }

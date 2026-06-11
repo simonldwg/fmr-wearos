@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.guava.await
 
 @Singleton
-class ExerciseManager @Inject constructor(
+class ExerciseClientManager @Inject constructor(
     @param:ApplicationContext private val context: Context
 ) {
     private val exerciseClient = HealthServices.getClient(context).exerciseClient
@@ -137,6 +137,6 @@ class ExerciseManager @Inject constructor(
 
 
     companion object {
-        const val LOG_TAG = "ExerciseManager"
+        const val LOG_TAG = "ExerciseClientManager"
     }
 }
