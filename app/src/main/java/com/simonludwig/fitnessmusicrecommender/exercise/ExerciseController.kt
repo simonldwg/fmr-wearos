@@ -13,8 +13,8 @@ class ExerciseController @Inject constructor(
     private val songState: SongState
 ) {
     fun start(useBasicExerciseScreen: Boolean = false) {
-        exerciseState.activate()
         exerciseState.setUseBasicExerciseScreen(useBasicExerciseScreen)
+        exerciseState.activate()
         ExerciseService.start(context)
     }
 
