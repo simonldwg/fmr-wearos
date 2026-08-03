@@ -6,12 +6,15 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.SystemClock
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.health.services.client.data.DataType
 import androidx.health.services.client.data.ExerciseUpdate
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
+import androidx.wear.ongoing.OngoingActivity
+import androidx.wear.ongoing.Status
 import com.simonludwig.fitnessmusicrecommender.messages.WearMessage
 import com.simonludwig.fitnessmusicrecommender.messages.WearMessageManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,7 +41,7 @@ class ExerciseService : LifecycleService() {
         super.onCreate()
         Log.d(LOG_TAG, "Starting exercise service")
         createNotificationChannel()
-        startForeground(NOTIFICATION_ID, buildNotification())
+        startForeground(NOTIFICATION_ID, postOngoingActivityAndBuildNotification())
         lifecycleScope.launch {
             exerciseClientManager.prepareExercise()
             exerciseClientManager.startExercise()
@@ -89,7 +92,28 @@ class ExerciseService : LifecycleService() {
             .createNotificationChannel(channel)
     }
 
-    private fun buildNotification() : Notification {
+    private fun buildOngoingActivity(notificationBuilder: NotificationCompat.Builder, intent: PendingIntent) {
+        val runStartTime = SystemClock.elapsedRealtime()
+
+        val ongoingActivityStatus = Status.Builder()
+            .addTemplate(applicationContext.getString(R.string.ongoing_activity_status_content))
+            .addPart("time", Status.StopwatchPart(runStartTime))
+            .build()
+
+        // create ongoing activity
+        val ongoingActivity =
+            OngoingActivity.Builder(applicationContext, NOTIFICATION_ID, notificationBuilder)
+                .setStaticIcon(R.drawable.ic_fmr_notification)
+                .setAnimatedIcon(R.drawable.ic_fmr_notification)
+                .setTouchIntent(intent)
+                .setStatus(ongoingActivityStatus)
+                .build()
+
+        ongoingActivity.apply(applicationContext)
+
+    }
+
+    private fun postOngoingActivityAndBuildNotification() : Notification {
         // We want to open the MainActivity whenever the user taps on the notification
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -101,13 +125,15 @@ class ExerciseService : LifecycleService() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        return NotificationCompat.Builder(this, CHANNEL_ID)
+        val notificationBuilder =  NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.notification_title))
             .setContentText(getString(R.string.notification_content))
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_fmr_notification)
             .setOngoing(true)
             .setContentIntent(pendingIntent)
-            .build()
+
+        buildOngoingActivity(notificationBuilder, pendingIntent)
+        return notificationBuilder.build()
     }
 
     companion object {

@@ -7,4 +7,5 @@
     <string name="notification_channel_name">Anzeige des aktuellen Trainings</string>
     <string name="notification_title">Training läuft</string>
     <string name="notification_content">Herzfrequenz wird überwacht</string>
+    <string name="ongoing_activity_status_content">Training: #time#</string>
 </resources>

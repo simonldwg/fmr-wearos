@@ -6,4 +6,5 @@
     <string name="notification_channel_name">Show current exercise notification</string>
     <string name="notification_title">Exercise started</string>
     <string name="notification_content">Heart rate is being monitored</string>
+    <string name="ongoing_activity_status_content">Exercise: #time#</string>
 </resources>

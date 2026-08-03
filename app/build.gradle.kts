@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.foundation.layout)
     implementation(libs.health.services.client)
     implementation(libs.hilt.android)
+    implementation(libs.wear.ongoing)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
