@@ -23,6 +23,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.simonludwig.fitnessmusicrecommender.R
 import com.simonludwig.fitnessmusicrecommender.presentation.MainActivity
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 
 
 @AndroidEntryPoint
@@ -73,13 +75,16 @@ class ExerciseService : LifecycleService() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         Log.d(LOG_TAG, "Stopping exercise service")
 
-        lifecycleScope.launch {
-            exerciseClientManager.stopExercise()
-            wearMessageManager.sendPhoneMessage(WearMessage.ExerciseStopped)
+        runBlocking {
+            withTimeoutOrNull(2000) {
+                exerciseClientManager.stopExercise()
+                wearMessageManager.sendPhoneMessage(WearMessage.ExerciseStopped)
+            }
         }
+
+        super.onDestroy()
     }
 
     private fun createNotificationChannel() {
