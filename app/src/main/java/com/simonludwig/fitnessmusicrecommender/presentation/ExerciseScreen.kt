@@ -102,7 +102,8 @@ fun ExerciseScreen(
             }
             FilledIconButton(
                 onClick = onSkipSong,
-                modifier = Modifier.size(38.dp)
+                modifier = Modifier.size(38.dp),
+                enabled = state.isSkipEnabled
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_skipnext),

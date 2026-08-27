@@ -60,6 +60,7 @@ class MainActivity : ComponentActivity() {
 
                         if(useBasicExerciseScreen) {
                             BasicExerciseScreen(
+                                state = state,
                                 onSkipSong = viewModel::skipSong
                             )
                         } else {

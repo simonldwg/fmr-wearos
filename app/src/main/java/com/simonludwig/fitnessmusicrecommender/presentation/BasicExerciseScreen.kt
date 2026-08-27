@@ -17,6 +17,7 @@ import com.simonludwig.fitnessmusicrecommender.R
 
 @Composable
 fun BasicExerciseScreen(
+    state: ExerciseScreenState,
     onSkipSong: () -> Unit
 ) {
     Box(
@@ -27,7 +28,8 @@ fun BasicExerciseScreen(
             onClick = onSkipSong,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(25.dp)
+                .padding(25.dp),
+            enabled = state.isSkipEnabled
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_skipnext),
