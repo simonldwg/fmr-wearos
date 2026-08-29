@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.PowerManager
 import android.os.SystemClock
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -25,6 +26,8 @@ import com.simonludwig.fitnessmusicrecommender.R
 import com.simonludwig.fitnessmusicrecommender.presentation.MainActivity
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.time.ExperimentalTime
+import kotlin.time.toKotlinInstant
 
 
 @AndroidEntryPoint
@@ -39,20 +42,40 @@ class ExerciseService : LifecycleService() {
     @Inject
     lateinit var exerciseState: ExerciseState
 
+    private var wakeLock: PowerManager.WakeLock? = null
+
     override fun onCreate() {
         super.onCreate()
         Log.d(LOG_TAG, "Starting exercise service")
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, postOngoingActivityAndBuildNotification())
+
+        if (exerciseState.disablePowerOptimization.value) {
+            acquireWakeLock()
+        }
+
         lifecycleScope.launch {
             exerciseClientManager.prepareExercise()
             exerciseClientManager.startExercise()
-            collectHeartRate()
+            collectUpdates()
             wearMessageManager.sendPhoneMessage(WearMessage.ExerciseStarted)
         }
     }
 
-    private fun collectHeartRate() {
+    private fun acquireWakeLock() {
+        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(
+            PowerManager.PARTIAL_WAKE_LOCK,
+            "$LOG_TAG:ExerciseWakeLock"
+        ).apply {
+            // acquire the wake lock for a maximum of 1h
+            acquire(3600000L)
+        }
+        Log.d(LOG_TAG, "WakeLock acquired")
+    }
+
+
+    private fun collectUpdates() {
         lifecycleScope.launch {
             exerciseClientManager.exerciseUpdateFlow
                 .catch { e -> Log.e(LOG_TAG, "Error while receiving exercise updates", e) }
@@ -60,16 +83,40 @@ class ExerciseService : LifecycleService() {
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     private fun processUpdate(update: ExerciseUpdate) {
-        val hrSamples = update.latestMetrics.getData(DataType.HEART_RATE_BPM)
 
-        hrSamples.lastOrNull()?.let { sample ->
+        update.latestMetrics.getData(DataType.HEART_RATE_BPM).lastOrNull()?.let { sample ->
             val bpm = sample.value.toInt()
-
             exerciseState.updateHeartRate(bpm)
-
             lifecycleScope.launch {
                 wearMessageManager.sendPhoneMessage(WearMessage.HeartRate(bpm))
+            }
+        }
+
+        update.latestMetrics.getData(DataType.STEPS_PER_MINUTE).lastOrNull()?.let { sample ->
+            lifecycleScope.launch {
+                wearMessageManager.sendPhoneMessage(WearMessage.StepsPerMinute(sample.value))
+            }
+        }
+
+        update.latestMetrics.getData(DataType.STEPS_PER_MINUTE_STATS)?.let { stats ->
+            lifecycleScope.launch {
+                wearMessageManager.sendPhoneMessage(
+                    WearMessage.StepsPerMinuteStats(
+                        min = stats.min,
+                        max = stats.max,
+                        average = stats.average,
+                        startTime = stats.start.toKotlinInstant(),
+                        endTime = stats.end.toKotlinInstant()
+                    )
+                )
+            }
+        }
+
+        update.latestMetrics.getData(DataType.STEPS_TOTAL)?.let { cumulative ->
+            lifecycleScope.launch {
+                wearMessageManager.sendPhoneMessage(WearMessage.RunningStepsTotal(cumulative.total))
             }
         }
     }
@@ -77,8 +124,11 @@ class ExerciseService : LifecycleService() {
     override fun onDestroy() {
         Log.d(LOG_TAG, "Stopping exercise service")
 
+        wakeLock?.let { if (it.isHeld) it.release() }
+        wakeLock = null
+
         runBlocking {
-            withTimeoutOrNull(2000) {
+            withTimeoutOrNull(3000) {
                 exerciseClientManager.stopExercise()
                 wearMessageManager.sendPhoneMessage(WearMessage.ExerciseStopped)
             }

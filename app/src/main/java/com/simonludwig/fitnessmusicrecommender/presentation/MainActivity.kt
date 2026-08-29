@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -21,7 +22,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     @Inject
     lateinit var exerciseState: ExerciseState
 
@@ -35,30 +35,40 @@ class MainActivity : ComponentActivity() {
                         .collectAsStateWithLifecycle()
                     val useBasicExerciseScreen by exerciseState.useBasicExerciseScreen
                         .collectAsStateWithLifecycle()
+                    val disablePowerOptimization by exerciseState.disablePowerOptimization
+                        .collectAsStateWithLifecycle()
 
-                    // Check permissions
-                    var hasPermission by remember {
-                        mutableStateOf(
-                            ContextCompat.checkSelfPermission(context, HEART_RATE_PERMISSION) ==
-                                    PackageManager.PERMISSION_GRANTED
-                        )
+                    // let screen stay active if the user decided to disable power optimization
+                    LaunchedEffect(disablePowerOptimization) {
+                        if (disablePowerOptimization) {
+                            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                        } else {
+                            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                        }
                     }
 
+                    // Check permissions
+                    var hasPermissions by remember {
+                        mutableStateOf(REQUIRED_PERMISSIONS.all { permission ->
+                            ContextCompat.checkSelfPermission(context, permission) ==
+                                    PackageManager.PERMISSION_GRANTED
+                        })
+                    }
                     val permissionLauncher = rememberLauncherForActivityResult(
-                        ActivityResultContracts.RequestPermission()
-                    ) { granted -> hasPermission = granted }
-
+                        ActivityResultContracts.RequestMultiplePermissions()
+                    ) { results ->
+                        hasPermissions = results.values.all { it }
+                    }
                     LaunchedEffect(exerciseActive) {
-                        if (!hasPermission) permissionLauncher.launch(HEART_RATE_PERMISSION)
+                        if (!hasPermissions) permissionLauncher.launch(REQUIRED_PERMISSIONS)
                     }
 
                     // If an exercise is active and permissions have been granted, show the
                     // ExerciseScreen, otherwise show the WaitingScreen
-                    if (exerciseActive && hasPermission) {
+                    if (exerciseActive && hasPermissions) {
                         val viewModel: ExerciseViewModel = hiltViewModel()
                         val state by viewModel.screenState.collectAsStateWithLifecycle()
-
-                        if(useBasicExerciseScreen) {
+                        if (useBasicExerciseScreen) {
                             BasicExerciseScreen(
                                 state = state,
                                 onSkipSong = viewModel::skipSong
@@ -71,7 +81,6 @@ class MainActivity : ComponentActivity() {
                                 onStopExercise = viewModel::stopExercise
                             )
                         }
-
                     } else {
                         WaitingScreen()
                     }
@@ -86,5 +95,10 @@ class MainActivity : ComponentActivity() {
                 "android.permission.health.READ_HEART_RATE"
             else
                 Manifest.permission.BODY_SENSORS
+
+        val REQUIRED_PERMISSIONS: Array<String> = buildList {
+            add(HEART_RATE_PERMISSION)
+            add(Manifest.permission.ACTIVITY_RECOGNITION)
+        }.toTypedArray()
     }
 }

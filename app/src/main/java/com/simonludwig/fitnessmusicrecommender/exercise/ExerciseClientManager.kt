@@ -31,8 +31,8 @@ class ExerciseClientManager @Inject constructor(
     suspend fun supportsHeartRate(): Boolean {
         val capabilities = exerciseClient.getCapabilitiesAsync().await()
 
-        if (ExerciseType.WORKOUT in capabilities.supportedExerciseTypes) {
-            val dataTypes = capabilities.getExerciseTypeCapabilities(ExerciseType.WORKOUT).supportedDataTypes
+        if (ExerciseType.RUNNING_TREADMILL in capabilities.supportedExerciseTypes) {
+            val dataTypes = capabilities.getExerciseTypeCapabilities(ExerciseType.RUNNING_TREADMILL).supportedDataTypes
             return DataType.HEART_RATE_BPM in dataTypes
         }
 
@@ -65,17 +65,26 @@ class ExerciseClientManager @Inject constructor(
             batchingModeOverrides.add(BatchingMode.HEART_RATE_5_SECONDS)
         }
 
+        val desiredDataTypes = setOf(
+            DataType.HEART_RATE_BPM,
+            DataType.STEPS_PER_MINUTE,
+            DataType.STEPS_PER_MINUTE_STATS,
+            DataType.STEPS_TOTAL
+        )
+
+        // only request the datatypes actually supported by the device
+        val runningCapabilities = capabilities.getExerciseTypeCapabilities(ExerciseType.RUNNING_TREADMILL)
+        val supportedDataTypes = desiredDataTypes.intersect(runningCapabilities.supportedDataTypes)
+
         val config = ExerciseConfig(
-            exerciseType = ExerciseType.WORKOUT,
-            dataTypes = setOf(
-                DataType.HEART_RATE_BPM
-            ),
+            exerciseType = ExerciseType.RUNNING_TREADMILL,
+            dataTypes = supportedDataTypes,
             isAutoPauseAndResumeEnabled = false,
             isGpsEnabled = false,
             batchingModeOverrides = batchingModeOverrides
         )
         exerciseClient.startExerciseAsync(config).await()
-        Log.d(LOG_TAG, "Exercise started")
+        Log.d(LOG_TAG, "Exercise started with data types: $supportedDataTypes")
     }
 
     suspend fun prepareExercise() {
@@ -93,6 +102,8 @@ class ExerciseClientManager @Inject constructor(
     }
 
     suspend fun stopExercise() {
+        // deliver ExerciseUpdates that have been batched but not delivered yet
+        exerciseClient.flushAsync().await()
         exerciseClient.endExerciseAsync().await()
     }
 

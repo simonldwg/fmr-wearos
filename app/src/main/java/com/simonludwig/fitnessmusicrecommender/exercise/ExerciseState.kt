@@ -17,6 +17,9 @@ class ExerciseState @Inject constructor() {
     private val _useBasicExerciseScreen = MutableStateFlow(false)
     val useBasicExerciseScreen = _useBasicExerciseScreen.asStateFlow()
 
+    private val _disablePowerOptimization = MutableStateFlow(false)
+    val disablePowerOptimization = _disablePowerOptimization.asStateFlow()
+
 
     fun activate() {
         _isExerciseActive.value = true
@@ -28,6 +31,7 @@ class ExerciseState @Inject constructor() {
         // the next exercise
         _heartRate.value = null
         _useBasicExerciseScreen.value = false
+        _disablePowerOptimization.value = false
     }
 
     fun updateHeartRate(bpm: Int) {
@@ -36,6 +40,10 @@ class ExerciseState @Inject constructor() {
 
     fun setUseBasicExerciseScreen(value: Boolean) {
         _useBasicExerciseScreen.value = value
+    }
+
+    fun setDisablePowerOptimization(value: Boolean) {
+        _disablePowerOptimization.value = value
     }
 
 }
