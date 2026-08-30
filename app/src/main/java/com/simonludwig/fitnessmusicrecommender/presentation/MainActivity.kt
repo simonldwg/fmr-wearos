@@ -4,12 +4,13 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.keepScreenOn
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -28,24 +29,20 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val disablePowerOptimization by exerciseState.disablePowerOptimization
+                .collectAsStateWithLifecycle()
+
             MaterialTheme {
-                AppScaffold {
+                AppScaffold(
+                    modifier = Modifier.then(
+                        if(disablePowerOptimization) Modifier.keepScreenOn() else Modifier
+                    )
+                ) {
                     val context = LocalContext.current
                     val exerciseActive by exerciseState.isExerciseActive
                         .collectAsStateWithLifecycle()
                     val useBasicExerciseScreen by exerciseState.useBasicExerciseScreen
                         .collectAsStateWithLifecycle()
-                    val disablePowerOptimization by exerciseState.disablePowerOptimization
-                        .collectAsStateWithLifecycle()
-
-                    // let screen stay active if the user decided to disable power optimization
-                    LaunchedEffect(disablePowerOptimization) {
-                        if (disablePowerOptimization) {
-                            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                        } else {
-                            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                        }
-                    }
 
                     // Check permissions
                     var hasPermissions by remember {
@@ -99,6 +96,7 @@ class MainActivity : ComponentActivity() {
         val REQUIRED_PERMISSIONS: Array<String> = buildList {
             add(HEART_RATE_PERMISSION)
             add(Manifest.permission.ACTIVITY_RECOGNITION)
+            add(Manifest.permission.POST_NOTIFICATIONS)
         }.toTypedArray()
     }
 }
