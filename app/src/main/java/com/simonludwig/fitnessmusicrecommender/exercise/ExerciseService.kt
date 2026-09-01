@@ -128,7 +128,7 @@ class ExerciseService : LifecycleService() {
         wakeLock = null
 
         runBlocking {
-            withTimeoutOrNull(3000) {
+            withTimeoutOrNull(5000) {
                 exerciseClientManager.stopExercise()
                 wearMessageManager.sendPhoneMessage(WearMessage.ExerciseStopped)
             }

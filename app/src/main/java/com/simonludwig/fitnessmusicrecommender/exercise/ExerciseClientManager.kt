@@ -15,6 +15,7 @@ import androidx.health.services.client.data.ExerciseTrackedStatus
 import androidx.health.services.client.data.ExerciseType
 import androidx.health.services.client.data.ExerciseUpdate
 import androidx.health.services.client.data.WarmUpConfig
+import androidx.health.services.client.flush
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -103,7 +104,7 @@ class ExerciseClientManager @Inject constructor(
 
     suspend fun stopExercise() {
         // deliver ExerciseUpdates that have been batched but not delivered yet
-        exerciseClient.flushAsync().await()
+        exerciseClient.flush()
         exerciseClient.endExerciseAsync().await()
     }
 

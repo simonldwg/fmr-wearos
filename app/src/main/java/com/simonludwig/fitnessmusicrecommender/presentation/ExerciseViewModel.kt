@@ -81,6 +81,9 @@ class ExerciseViewModel @Inject constructor(
     }
 
     fun stopExercise() {
+        viewModelScope.launch {
+            messageManager.sendPhoneMessage(WearMessage.StopExercise)
+        }
         exerciseController.stop()
     }
 }
