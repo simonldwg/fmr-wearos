@@ -121,3 +121,10 @@ The application ID can be found as `applicationId` in `app/build.gradle(.kts)`.
 > **same application ID** and are **signed with the same key**. Debug builds are signed with the debug keystore
 > at `~/.android/debug.keystore`, so build and install both apps from the same machine. Otherwise, the watch
 > will not be able to reach the phone app.
+
+---
+
+### Other repos of this project
+* [Smartphone app](https://github.com/simonldwg/fmr-phone)
+* [FMRAndroidCore library](https://github.com/simonldwg/fmr-android-core)
+* [Backend](https://github.com/simonldwg/fmr-backend)
