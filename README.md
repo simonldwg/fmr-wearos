@@ -5,7 +5,7 @@ The Fitness Music Recommender monitors your heart rate and selects a suitable so
 The app was developed as part of my bachelor's thesis at the
 [University of Applied Sciences Düsseldorf](https://www.hs-duesseldorf.de/).
 
-<img src="/watch_app_screenshot.png" alt="app screenshot" width="200">
+<img src="https://github.com/simonldwg/fmr-wearos/blob/6573c876fb796557732ebf80561309463185360a/watch_app_screenshot.png" alt="app screenshot" width="200">
 
 ---
 
